@@ -1,7 +1,6 @@
 <template>
   <div class="main-tab-bar">
-          <tab-bar>
-  
+    <tab-bar>
       <tab-bar-item path="/home" activeColor="blue">
         <img slot="item-icon" src = "~assets/img/tabbar/home.svg">
         <img slot="item-icon-active" src = "~assets/img/tabbar/home_active.svg">
@@ -24,7 +23,6 @@
         <div slot="item-text">我的</div>
       </tab-bar-item>
     </tab-bar>
-    
   </div>
 </template>
 
