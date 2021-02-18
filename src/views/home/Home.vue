@@ -5,6 +5,7 @@
     <recommend-view :recommends="recommends" />
     <feature-view />
     <tab-control class="tab-control" :titles="['流行','新款','精选']" />
+    <goods-list :goods="goods['pop'].list"/>
     <li>1</li>
     <li>2</li>
     <li>3</li>
@@ -75,8 +76,9 @@
 
   import NavBar from 'components/common/navbar/NavBar'
   import TabControl from 'components/content/tabControl/TabControl'
+  import GoodsList from 'components/content/goods/GoodsList'
 
-  import {getHomeMultidata} from 'network/home'
+  import {getHomeMultidata,getHomeGoods} from 'network/home'
   export default {
     name: 'Home',
     components: {
@@ -84,7 +86,8 @@
       HomeSwiper,
       RecommendView,
       FeatureView,
-      TabControl
+      TabControl,
+      GoodsList
     },
     data() {
       return {
@@ -101,7 +104,7 @@
     created() {
       // 1. 请求多个数据
       getHomeMultidata().then(res=>{
-        console.log('home',res);
+        // console.log('home',res);
         // 网上找一层this就是create里面的this
         // this.result = res;
         // console.log(res.data)
@@ -109,6 +112,10 @@
         this.recommends = res.data.recommend.list;
       },err=>{
         console.log("error")
+      })
+      // 2. 请求商品数据
+      getHomeGoods('pop',1).then(res=>{
+        console.log(res);
       })
     }
   }
