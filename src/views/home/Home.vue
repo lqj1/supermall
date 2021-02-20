@@ -1,73 +1,24 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-    <home-swiper :banners="banners" />
-    <recommend-view :recommends="recommends" />
-    <feature-view />
-    <tab-control class="tab-control" 
-                 :titles="['流行','新款','精选']" 
-                 @tabClick="tabClick" />
-    <goods-list :goods="showGoods"/>
-    <li>1</li>
-    <li>2</li>
-    <li>3</li>
-    <li>4</li>
-    <li>5</li>
-    <li>6</li>
-    <li>7</li>
-    <li>8</li>
-    <li>9</li>
-    <li>11</li>
-    <li>12</li>
-    <li>13</li>
-    <li>14</li>
-    <li>15</li>
-    <li>16</li>
-    <li>17</li>
-    <li>18</li>
-    <li>19</li>
-    <li>20</li>
-    <li>21</li>
-    <li>1</li>
-    <li>2</li>
-    <li>3</li>
-    <li>4</li>
-    <li>5</li>
-    <li>6</li>
-    <li>7</li>
-    <li>8</li>
-    <li>9</li>
-    <li>11</li>
-    <li>12</li>
-    <li>13</li>
-    <li>14</li>
-    <li>15</li>
-    <li>16</li>
-    <li>17</li>
-    <li>18</li>
-    <li>19</li>
-    <li>20</li>
-    <li>21</li>
-    <li>1</li>
-    <li>2</li>
-    <li>3</li>
-    <li>4</li>
-    <li>5</li>
-    <li>6</li>
-    <li>7</li>
-    <li>8</li>
-    <li>9</li>
-    <li>11</li>
-    <li>12</li>
-    <li>13</li>
-    <li>14</li>
-    <li>15</li>
-    <li>16</li>
-    <li>17</li>
-    <li>18</li>
-    <li>19</li>
-    <li>20</li>
-    <li>21</li>
+
+    <scroll class="content" 
+            ref="scroll" 
+            :probe-type="3" 
+            @scroll="contentScroll"
+            :pull-up-load="true"
+            @pullingUp="loadMore" >
+      <home-swiper :banners="banners" />
+      <recommend-view :recommends="recommends" />
+      <feature-view />
+      <tab-control class="tab-control" 
+                  :titles="['流行','新款','精选']" 
+                  @tabClick="tabClick" />
+      <goods-list :goods="showGoods"/>
+    </scroll>
+
+    <!-- native监听组件元素的原生事件，不然没法监听 -->
+    <back-top @click.native="backClick" v-show="isShowBackTop" />
   </div>
 </template>
 
@@ -79,8 +30,11 @@
   import NavBar from 'components/common/navbar/NavBar'
   import TabControl from 'components/content/tabControl/TabControl'
   import GoodsList from 'components/content/goods/GoodsList'
+  import Scroll from 'components/common/scroll/Scroll'
+  import BackTop from 'components/content/backTop/BackTop'
 
   import {getHomeMultidata,getHomeGoods} from 'network/home'
+
   export default {
     name: 'Home',
     components: {
@@ -89,7 +43,9 @@
       RecommendView,
       FeatureView,
       TabControl,
-      GoodsList
+      GoodsList,
+      Scroll,
+      BackTop
     },
     data() {
       return {
@@ -101,7 +57,8 @@
           'new': {page: 0, list:[]},
           'sell': {page: 0, list:[]},
         },
-        currentType: 'pop'
+        currentType: 'pop',
+        isShowBackTop: false
       }
     },
     created() {
@@ -122,6 +79,18 @@
       /**
        * 事件监听相关的
        */
+      loadMore() {
+        // console.log('首页上拉加载更多')
+        this.getHomeGoods(this.currentType);
+        this.$refs.scroll.scroll.refresh();
+      },
+      contentScroll(position) {
+        this.isShowBackTop = -position.y > 1000
+      },
+      backClick() {
+        // 访问组件内部data(scroll)属性，并调用方法
+        this.$refs.scroll.scroll.scrollTo(0,0,500);
+      },
       tabClick(index) {
         switch(index) {
           case 0:
@@ -147,11 +116,14 @@
           this.recommends = res.data.recommend.list;
         })
       },
+      // 请求三种不同的分类数据
       getHomeGoods(type) {
         const page = this.goods[type].page + 1
         getHomeGoods(type,page).then(res=>{
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page += 1
+
+          this.$refs.scroll.scroll.finishPullUp()
         })
       }
     }
@@ -159,21 +131,31 @@
 </script>
 
 <style scoped>
-  #home {
-    padding-top: 44px;
+  #home{
+    /* padding-top: 44px; */
+    height: 100vh;
+    position: relative;
   }
-  .home-nav {
+  .home-nav{
     background-color: var(--color-tint);
-    color: #FFF;
+    color: #fff;
+  /* 
     position: fixed;
     left: 0;
     right: 0;
     top: 0;
+    z-index: 9; */
+  }
+  .tab-control{
+    position: relative;
     z-index: 9;
   }
-  .tab-control {
-    position: sticky;
-    top: 44px;
-    z-index: 9;
+  .content{
+      overflow: hidden;
+      position: absolute;
+      top: 44px;
+      bottom: 49px;
+      left: 0;
+      right: 0;
   }
 </style>
