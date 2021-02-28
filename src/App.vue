@@ -1,8 +1,10 @@
 <template>
   <div class="app">
-    <keep-alive exclude="Detail"><router-view></router-view></keep-alive>
-    
-    <main-tab-bar/>
+    <keep-alive exclude="Detail">
+      <router-view></router-view>
+    </keep-alive>
+
+    <main-tab-bar />
     <icon></icon>
     <svg-icon></svg-icon>
   </div>
@@ -14,17 +16,17 @@ import Icon from 'components/content/Icon/Icon.vue'
 import SvgIcon from 'components/content/Icon/svg.vue'
 export default {
   name: 'App',
-  data() { 
+  data () {
     return {
 
     }
   },
-  components:{
+  components: {
     MainTabBar,
     Icon,
     SvgIcon,
   }
- }
+}
 </script>
 
 <style scoped>
