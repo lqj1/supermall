@@ -56,7 +56,8 @@ export default {
       currentType: 'pop',
       isShowBackTop: false,
       tabOffsetTop: 0,
-      isTabFixed: false
+      isTabFixed: false,
+      saveY: 0
     }
   },
   // created里面不要拿dom，在mounted中
@@ -82,6 +83,18 @@ export default {
     // 所有的组件都有一个属性$el:用于获取组件中元素
     // this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop;
     // console.log('this.tab', this.tabOffsetTop)
+  },
+  destroyed () {
+    console.log('home destroy');
+  },
+  activated () {
+    // console.log('home activate');
+    this.$refs.scroll.scrollTo(0, this.saveY, 0)
+    this.$refs.scroll.refresh()
+  },
+  deactivated () {
+    // console.log('home deactivate');
+    this.saveY = this.$refs.scroll.getScrollY()
   },
   computed: {
     showGoods () {
