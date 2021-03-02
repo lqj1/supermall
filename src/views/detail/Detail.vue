@@ -1,19 +1,15 @@
 <template>
   <div id="detail">
     <!-- 导航 -->
-    <detail-nav-bar></detail-nav-bar>
-    <scroll class="content">
+    <detail-nav-bar class="detail-nav"></detail-nav-bar>
+    <scroll class="content" ref="scroll">
       <detail-swiper :top-images="topImages"></detail-swiper>
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
+      <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
+      <detail-param-info :param-info="paramInfo"></detail-param-info>
     </scroll>
-    <h2>111111111111122</h2>
-    <h2>111111111111122</h2>
-    <h2>111111111111122</h2>
-    <h2>111111111111122</h2>
-    <h2>111111111111122</h2>
-    <h2>111111111111122</h2>
-    <h2>111111111111122</h2>
+
   </div>
 </template>
 
@@ -22,10 +18,12 @@ import DetailNavBar from './childComps/DetailNavBar'
 import DetailSwiper from './childComps/DetailSwiper'
 import DetailBaseInfo from './childComps/DetailBaseInfo'
 import DetailShopInfo from './childComps/DetailShopInfo'
+import DetailGoodsInfo from './childComps/DetailGoodsInfo'
+import DetailParamInfo from './childComps/DetailParamInfo'
 
 import Scroll from 'components/common/scroll/Scroll'
 
-import { getDetail, Goods, Shop } from 'network/detail'
+import { getDetail, Goods, Shop, GoodsParam } from 'network/detail'
 export default {
   name: 'Detail',
   components: {
@@ -33,6 +31,8 @@ export default {
     DetailSwiper,
     DetailBaseInfo,
     DetailShopInfo,
+    DetailGoodsInfo,
+    DetailParamInfo,
     Scroll
   },
   data () {
@@ -40,7 +40,14 @@ export default {
       iid: null,
       topImages: [],
       goods: {},
-      shop: {}
+      shop: {},
+      detailInfo: {},
+      paramInfo: {}
+    }
+  },
+  methods: {
+    imageLoad () {
+      this.$refs.scroll.refresh()
     }
   },
   created () {
@@ -56,6 +63,12 @@ export default {
       this.goods = new Goods(data.itemInfo, data.columns, data.shopInfo.services)
       // 2.3 创建店铺信息对象
       this.shop = new Shop(data.shopInfo)
+      // 2.4 保存商品的详情数据
+      this.detailInfo = data.detailInfo
+      // 2.5 获取参数信息
+      this.paramInfo = new GoodsParam(data.itemParams.info, data.itemParams.rule)
+
+
     }).catch((err) => {
       console.log(err);
     });
@@ -65,12 +78,26 @@ export default {
 
 <style scoped>
 #detail {
+  height: 100vh;
   position: relative;
   z-index: 9;
   background-color: #fff;
-  height: 100vh;
 }
+
 .content {
-  height: calc(100%-44px);
+  position: absolute;
+  top: 44px;
+  bottom: 60px;
+}
+.detail-nav {
+  position: relative;
+  z-index: 9;
+  background: #fff;
+}
+
+.back-top {
+  position: fixed;
+  right: 10px;
+  bottom: 65px;
 }
 </style>
